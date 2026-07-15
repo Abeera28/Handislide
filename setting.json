@@ -1,0 +1,15 @@
+{
+    "hand_preference": "right",
+    "sensitivity": 5,
+    "annotation_color": [255, 0, 0],
+    "camera_index": 0,
+    "swipe_threshold": 100,
+    "fist_hold_time": 1.0,
+    "palm_hold_time": 2.0,
+    "toggle_hold_time": 0.5,
+    "zone_enter_time": 0.3,
+    "zone_exit_time": 0.5,
+    "border_enabled": true,
+    "audio_enabled": true,
+    "first_run": true
+}
