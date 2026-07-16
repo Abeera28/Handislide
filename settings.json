@@ -1,7 +1,11 @@
 {
     "hand_preference": "right",
     "sensitivity": 5,
-    "annotation_color": [255, 0, 0],
+    "annotation_color": [
+        255,
+        0,
+        0
+    ],
     "camera_index": 1,
     "swipe_threshold": 100,
     "fist_hold_time": 1.0,

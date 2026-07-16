@@ -14,8 +14,8 @@ class GestureBuffer:
         """
         # Required consecutive frames for each gesture type
         self.required_frames = {
-            "swipe_right": 5,
-            "swipe_left": 5,
+            "swipe_right": 1,
+            "swipe_left": 1,
             "fist": 30,           # ~1 second at 30fps
             "open_palm_hold": 60,  # ~2 seconds at 30fps
             "thumbs_up": 10,       # ~0.3 seconds
@@ -27,8 +27,8 @@ class GestureBuffer:
         
         # Cooldown between gestures to prevent rapid repeats
         self.gesture_cooldown = {
-            "swipe_right": 0.3,
-            "swipe_left": 0.3,
+            "swipe_right": 0.8,
+            "swipe_left": 0.8,
             "fist": 1.0,
             "open_palm_hold": 1.0,
             "thumbs_up": 1.0,

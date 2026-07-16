@@ -30,9 +30,9 @@ class GestureClassifier:
         
         # Tracking previous wrist positions for swipe detection
         self.wrist_history = []
-        self.max_history = 15  # Store last 15 frames
+        self.max_history = 20  # Store last 15 frames
         self.swipe_cooldown = 0
-        self.swipe_cooldown_frames = 15  # Frames to wait after a swipe
+        self.swipe_cooldown_frames = 10  # Frames to wait after a swipe
         
         # Index finger history for drawing
         self.index_history = []
@@ -105,17 +105,19 @@ class GestureClassifier:
     
     def _detect_swipe(self, frame_width, frame_height):
         """Detect horizontal swipe gestures."""
-        if len(self.wrist_history) < 10:
+        if len(self.wrist_history) < 6:
             return None
         
-        # Get start and end positions
-        start_x = self.wrist_history[0][0]
-        end_x = self.wrist_history[-1][0]
+        # Check movement over last 6 frames only (faster response)
+        recent = self.wrist_history[-6:]
+        start_x = recent[0][0]
+        end_x = recent[-1][0]
         
-        # Calculate movement in pixels
-        dx = (end_x - start_x) * frame_width
+        # Calculate movement as fraction of frame width
+        dx = end_x - start_x
         
-        if abs(dx) > self.swipe_threshold * frame_width:
+        # Lower threshold — 0.08 means 8% of frame width
+        if abs(dx) > 0.08:
             if dx > 0:
                 return self.SWIPE_RIGHT
             else:
@@ -265,16 +267,23 @@ class GestureClassifier:
     def _is_index_pointing(self, landmarks):
         """
         Check if only the index finger is extended (pointing).
+        Stricter version — requires clear margins to avoid false positives.
         """
-        index_extended = landmarks[8][1] < landmarks[6][1]
-        
-        # Other fingers should be curled
-        middle_curled = landmarks[12][1] > landmarks[10][1]
-        ring_curled = landmarks[16][1] > landmarks[14][1]
-        pinky_curled = landmarks[20][1] > landmarks[18][1]
-        
-        return index_extended and middle_curled and ring_curled and pinky_curled
-    
+        # Index must be clearly extended (extra margin of 0.04)
+        index_extended = landmarks[8][1] < landmarks[6][1] - 0.04
+
+        # Middle must be clearly curled (extra margin of 0.04)
+        middle_curled = landmarks[12][1] > landmarks[10][1] + 0.04
+
+        # Ring and pinky clearly curled
+        ring_curled = landmarks[16][1] > landmarks[14][1] + 0.02
+        pinky_curled = landmarks[20][1] > landmarks[18][1] + 0.02
+
+        # Thumb must be tucked in (not sticking out sideways)
+        thumb_tucked = abs(landmarks[4][0] - landmarks[5][0]) < 0.1
+
+        return index_extended and middle_curled and ring_curled and pinky_curled and thumb_tucked
+
     def get_index_position(self):
         """Get the current index finger tip position (normalized 0-1)."""
         if len(self.index_history) > 0:
